@@ -9,7 +9,7 @@ Blather is a speech recognizer that will run commands when a user speaks preset 
 3. gstreamer-0.10 base plugins (required for alsa)
 4. pyside (only required for the Qt based UI)
 5. pygtk (only required for the Gtk based UI)
-6. pyyaml (only required for reading the options file)  
+6. pyyaml (only required for reading the options file)
 
 **Note:** it may also be required to install `pocketsphinx-hmm-en-hub4wsj`
 
@@ -25,6 +25,7 @@ Blather is a speech recognizer that will run commands when a user speaks preset 
 6. run Blather.py
     * for Qt GUI, run Blather.py -i q
     * for Gtk GUI, run Blather.py -i g
+    * for Gtk Tray GUI, run Blather.py -i gt
     * to start a UI in 'continuous' listen mode, use the -c flag
     * to use a microphone other than the system default, use the -m flag
 7. start talking
@@ -37,25 +38,25 @@ once the sentences.corpus file has been created, run the language_updater.sh scr
 
 ### Examples
 
-* To run blather with the GTK UI and start in continuous listen mode:  
+* To run blather with the GTK UI and start in continuous listen mode:
 `./Blather.py -i g -c`
 
-* To run blather with no UI and using a USB microphone recognized and device 2:  
+* To run blather with no UI and using a USB microphone recognized and device 2:
 `./Blather.py -m 2`
 
-* To have blather pass the matched sentence to the executing command:  
- `./Blather.py -p`  
+* To have blather pass the matched sentence to the executing command:
+ `./Blather.py -p`
 
- 	**explanation:** if the commands.conf contains:  
- **good morning world : example_command.sh**   
- then 3 arguments, 'good', 'morning', and 'world' would get passed to example_command.sh as  
+ 	**explanation:** if the commands.conf contains:
+ **good morning world : example_command.sh**
+ then 3 arguments, 'good', 'morning', and 'world' would get passed to example_command.sh as
  `example_command.sh good morning world`
 
-* To run a command when a valid sentence has been detected:   
-	`./Blather.py --valid-sentence-command=/path/to/command`  
+* To run a command when a valid sentence has been detected:
+	`./Blather.py --valid-sentence-command=/path/to/command`
 	**note:** this can be set in the options.yml file
-* To run a command when a invalid sentence has been detected:   
-	`./Blather.py --invalid-sentence-command=/path/to/command`  
+* To run a command when a invalid sentence has been detected:
+	`./Blather.py --invalid-sentence-command=/path/to/command`
 	**note:** this can be set in the options.yml file
 
 ### Finding the Device Number of a USB microphone
