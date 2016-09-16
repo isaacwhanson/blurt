@@ -1,18 +1,22 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # -- this code is licensed GPLv3
 # Copyright 2013 Jezra
 
 import sys
 import signal
-import gobject
 import os.path
 import subprocess
+
+import gi
+from gi.repository import GObject
+
 from optparse import OptionParser
+
 try:
 	import yaml
 except:
-	print "YAML is not supported. ~/.config/blather/options.yaml will not function"
+	print("YAML is not supported. ~/.config/blather/options.yaml will not function")
 
 #where are the files?
 conf_dir = os.path.expanduser("~/.config/blather")
@@ -58,7 +62,7 @@ class Blather:
 			elif self.options['interface'] == "gt":
 				from GtkTrayUI import UI
 			else:
-				print "no GUI defined"
+				print("no GUI defined")
 				sys.exit()
 
 			self.ui = UI(args, self.options['continuous'])
@@ -78,27 +82,28 @@ class Blather:
 		#create the recognizer
 		try:
 			self.recognizer = Recognizer(lang_file, dic_file, self.options['microphone'] )
-		except Exception, e:
+		except Exception as e:
+			print(e)
 			#no recognizer? bummer
 			sys.exit()
 
 		self.recognizer.connect('finished',self.recognizer_finished)
 
-		print "Using Options: ", self.options
+		print( "Using Options: ", self.options )
 
 	def read_commands(self):
 		#read the.commands file
 		file_lines = open(command_file)
 		strings = open(strings_file, "w")
 		for line in file_lines:
-				print line
+				print (line)
 				#trim the white spaces
 				line = line.strip()
 				#if the line has length and the first char isn't a hash
 				if len(line) and line[0]!="#":
 						#this is a parsible line
 						(key,value) = line.split(":",1)
-						print key, value
+						print(key, value)
 						self.commands[key.strip().lower()] = value.strip()
 						strings.write( key.strip()+"\n")
 		#close the strings file
@@ -130,13 +135,13 @@ class Blather:
 
 	# Print the cmd and then run the command
 	def run_command(self, cmd):
-		print cmd
+		print (cmd)
 		subprocess.call(cmd, shell=True)
 
 	def recognizer_finished(self, recognizer, text):
 		t = text.lower()
 		#is there a matching command?
-		if self.commands.has_key( t ):
+		if t in self.commands:
 			#run the valid_sentence_command if there is a valid sentence command
 			if self.options['valid_sentence_command']:
 				subprocess.call(self.options['valid_sentence_command'], shell=True)
@@ -152,7 +157,7 @@ class Blather:
 			#run the invalid_sentence_command if there is a valid sentence command
 			if self.options['invalid_sentence_command']:
 				subprocess.call(self.options['invalid_sentence_command'], shell=True)
-			print "no matching command %s" %(t)
+			print( "no matching command %s" %(t))
 		#if there is a UI and we are not continuous listen
 		if self.ui:
 			if not self.continuous_listen:
@@ -171,7 +176,7 @@ class Blather:
 		sys.exit()
 
 	def process_command(self, UI, command):
-		print command
+		print (command)
 		if command == "listen":
 			self.recognizer.listen()
 		elif command == "stop":
@@ -234,19 +239,20 @@ if __name__ == "__main__":
 	#make our blather object
 	blather = Blather(options)
 	#init gobject threads
-	gobject.threads_init()
+	GObject.threads_init()
 	#we want a main loop
-	main_loop = gobject.MainLoop()
+	main_loop = GObject.MainLoop()
 	#handle sigint
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	#run the blather
+	print("run blather")
 	blather.run()
 	#start the main loop
 
 	try:
 		main_loop.run()
 	except:
-		print "time to quit"
+		print( "time to quit")
 		main_loop.quit()
 		sys.exit()
 
