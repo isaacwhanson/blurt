@@ -133,6 +133,10 @@ class Blather:
 		print cmd
 		subprocess.call(cmd, shell=True)
 
+		#now that we have executed, should we quit?
+		if self.options['execute_once']:
+			self.quit()
+
 	def recognizer_finished(self, recognizer, text):
 		t = text.lower()
 		#is there a matching command?
@@ -205,6 +209,10 @@ if __name__ == "__main__":
 	parser.add_option("-c", "--continuous",
 		action="store_true", dest="continuous", default=False,
 		help="starts interface with 'continuous' listen enabled")
+
+	parser.add_option("-x", "--execute-once",
+		action="store_true", dest="execute_once", default=False,
+		help="execute one command and then quit")
 
 	parser.add_option("-p", "--pass-words",
 		action="store_true", dest="pass_words", default=False,
