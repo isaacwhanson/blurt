@@ -50,14 +50,12 @@ class Recognizer(GObject.GObject):
 		asr=self.pipeline.get_by_name('asr')
 		asr.set_property('lm', language_file)
 		asr.set_property('dict', dictionary_file)
-		asr.set_property('configured', True)
 
 	def parse_bus_element_message(self, bus, message):
 		#get the message's structure
 		message_struct = message.get_structure()
 		#get the message's ... ahem ... type
 		message_type = message_struct.get_name()
-		print(message_type)
 		#is this pocket sphinx?
 		if message_type != 'pocketsphinx':
 			#get outa here!
@@ -78,7 +76,6 @@ class Recognizer(GObject.GObject):
 		self.pipeline.set_state(Gst.State.PLAYING)
 
 	def pause(self):
-		self.vad.set_property('silent', True)
 		self.pipeline.set_state(Gst.State.PAUSED)
 
 	def result(self, asr, text, uttid):
