@@ -56,6 +56,7 @@ class UI(GObject.GObject):
 			self.emit("command", "listen")
 			self.menu_listen.set_label("Stop")
 			self.statusicon.set_tooltip_text("Blather - Listening")
+			self.set_icon_active()
 		else:
 			self.icon_inactive()
 			self.menu_listen.set_label("Listen")
@@ -82,7 +83,7 @@ class UI(GObject.GObject):
 	def finished(self, text):
 		if not self.menu_continuous.get_active():
 			self.menu_listen.set_label("Listen")
-			self.statusicon.set_from_icon_name("blather_stopped")
+			self.set_icon_inactive()
 			self.statusicon.set_tooltip_text("Blather - Idle")
 
 	def set_icon_active_asset(self, i):
