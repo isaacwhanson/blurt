@@ -2,20 +2,24 @@
 # -- this code is licensed GPLv3
 # Copyright 2013 Jezra
 import sys
-import gobject
-# Qt stuff
-from PySide.QtCore import Signal, Qt
-from PySide.QtGui import QApplication, QWidget, QMainWindow, QVBoxLayout
-from PySide.QtGui import QLabel, QPushButton, QCheckBox, QIcon, QAction
+import gi
+from gi.repository import GObject
 
-class UI(gobject.GObject):
+# Qt stuff
+from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QPushButton, QCheckBox, QAction
+
+from PyQt5.QtGui import QIcon
+
+class UI(GObject.GObject):
 	__gsignals__ = {
-		'command' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,))
+		'command' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,))
 	}
 
 	def __init__(self,args,continuous):
 		self.continuous = continuous
-		gobject.GObject.__init__(self)
+		GObject.GObject.__init__(self)
 		#start by making our app
 		self.app = QApplication(args)
 		#make a window
@@ -29,14 +33,14 @@ class UI(gobject.GObject):
 		layout = QVBoxLayout()
 		center.setLayout(layout)
 		#make a listen/stop button
-		self.lsbutton = QPushButton("Listen")
-		layout.addWidget(self.lsbutton)
+		self.listen_button = QPushButton("Listen")
+		layout.addWidget(self.listen_button)
 		#make a continuous button
 		self.ccheckbox = QCheckBox("Continuous Listen")
 		layout.addWidget(self.ccheckbox)
 
 		#connect the buttons
-		self.lsbutton.clicked.connect(self.lsbutton_clicked)
+		self.listen_button.clicked.connect(self.listen_button_clicked)
 		self.ccheckbox.clicked.connect(self.ccheckbox_clicked)
 
 		#add a label to the UI to display the last command
@@ -56,29 +60,29 @@ class UI(gobject.GObject):
 	def ccheckbox_clicked(self):
 		checked = self.ccheckbox.isChecked()
 		if checked:
-			#disable lsbutton
-			self.lsbutton.setEnabled(False)
-			self.lsbutton_stopped()
+			#disable listen_button
+			self.listen_button.setEnabled(False)
+			self.listen_button_stopped()
 			self.emit('command', "continuous_listen")
 			self.set_icon_active()
 		else:
-			self.lsbutton.setEnabled(True)
+			self.listen_button.setEnabled(True)
 			self.emit('command', "continuous_stop")
 			self.set_icon_inactive()
 
-	def lsbutton_stopped(self):
-		self.lsbutton.setText("Listen")
+	def listen_button_stopped(self):
+		self.listen_button.setText("Listen")
 
-	def lsbutton_clicked(self):
-		val = self.lsbutton.text()
+	def listen_button_clicked(self):
+		val = self.listen_button.text()
 		if val == "Listen":
 			self.emit("command", "listen")
-			self.lsbutton.setText("Stop")
+			self.listen_button.setText("Stop")
 			#clear the label
 			self.label.setText("")
 			self.set_icon_active()
 		else:
-			self.lsbutton_stopped()
+			self.listen_button_stopped()
 			self.emit("command", "stop")
 			self.set_icon_inactive()
 
@@ -95,7 +99,8 @@ class UI(gobject.GObject):
 	def finished(self, text):
 		#if the continuous isn't pressed
 		if not self.ccheckbox.isChecked():
-			self.lsbutton_stopped()
+			self.listen_button_stopped()
+			self.set_icon_inactive()
 		self.label.setText(text)
 
 	def set_icon(self, icon):
