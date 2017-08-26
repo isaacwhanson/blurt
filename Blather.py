@@ -13,18 +13,13 @@ from gi.repository import GObject
 
 from optparse import OptionParser
 
-try:
-	import yaml
-except:
-	print("YAML is not supported. ~/.config/blather/options.yaml will not function")
-
 #where are the files?
 conf_dir = os.path.expanduser("~/.config/blather")
 lang_dir = os.path.join(conf_dir, "language")
 command_file = os.path.join(conf_dir, "commands.conf")
 strings_file = os.path.join(conf_dir, "sentences.corpus")
 history_file = os.path.join(conf_dir, "blather.history")
-opt_file = os.path.join(conf_dir, "options.yaml")
+opt_file = os.path.join(conf_dir, "options.conf")
 lang_file = os.path.join(lang_dir,'lm')
 dic_file = os.path.join(lang_dir,'dic')
 #make the lang_dir if it doesn't exist
@@ -47,6 +42,7 @@ class Blather:
 		self.read_commands()
 
 		#load the options file
+		print("load the options")
 		self.load_options()
 
 		#merge the opts
@@ -78,7 +74,7 @@ class Blather:
 
 		if self.options['history']:
 			self.history = []
-
+		
 		#create the recognizer
 		try:
 			self.recognizer = Recognizer(lang_file, dic_file, self.options['microphone'] )
@@ -88,33 +84,61 @@ class Blather:
 			sys.exit()
 
 		self.recognizer.connect('finished',self.recognizer_finished)
-
+		
 		print( "Using Options: ", self.options )
 
-	def read_commands(self):
-		#read the.commands file
-		file_lines = open(command_file)
-		strings = open(strings_file, "w")
-		for line in file_lines:
-				print (line)
+	def read_key_val_file(self, file_path, lowercase_key = False, lowercase_value = False):
+		print(file_path)
+		file_text = open(file_path)
+		return_struct = {}
+		for line in file_text:
 				#trim the white spaces
 				line = line.strip()
 				#if the line has length and the first char isn't a hash
 				if len(line) and line[0]!="#":
-						#this is a parsible line
-						(key,value) = line.split(":",1)
-						print(key, value)
-						self.commands[key.strip().lower()] = value.strip()
-						strings.write( key.strip()+"\n")
+					#this is a parsible line
+					(key,value) = line.split(":",1)
+					key = key.strip()
+					value = value.strip()
+					print(key, value)
+					if lowercase_key:
+						key = key.lower() 
+					if lowercase_value:
+						value = value.lower() 
+					if value == "None" or value=="null":
+						value = None
+					if value == "True" or value=="true":
+						value = True
+					if value == "False" or value=="false":
+						value = False
+					return_struct[key] = value
+					
+		return return_struct
+						
+	def read_commands(self):
+		#read the.commands file
+		self.commands = self.read_key_val_file(command_file)
+		file_lines = open(command_file)
+		strings = open(strings_file, "w")
+		for i in self.commands:
+			strings.write( i.lower()+"\n")
+			
 		#close the strings file
 		strings.close()
 
+
 	def load_options(self):
 		#is there an opt file?
+		print(opt_file)
+		self.options = self.read_key_val_file(opt_file)
+		if 'microphone' in self.options:
+			 self.options['microphone'] = int(self.options['microphone'])
+		print("options: ",self.options)
 		try:
-			opt_fh = open(opt_file)
-			text = opt_fh.read()
-			self.options = yaml.load(text)
+			self.options = self.read_key_val_file(opt_file)
+			#if there is a microphone option, convert value to int
+			if 'microphone' in self.options:
+			 self.options['microphone'] = int(self.options['microphone'])
 		except:
 			pass
 
@@ -133,10 +157,12 @@ class Blather:
 			#close the  file
 			hfile.close()
 
+
 	# Print the cmd and then run the command
 	def run_command(self, cmd):
 		print (cmd)
 		subprocess.call(cmd, shell=True)
+
 
 	def recognizer_finished(self, recognizer, text):
 		t = text.lower()
@@ -166,14 +192,17 @@ class Blather:
 			#let the UI know that there is a finish
 			self.ui.finished(t)
 
+
 	def run(self):
 		if self.ui:
 			self.ui.run()
 		else:
 			blather.recognizer.listen()
 
+
 	def quit(self):
 		sys.exit()
+
 
 	def process_command(self, UI, command):
 		print (command)
