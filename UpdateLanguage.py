@@ -13,43 +13,32 @@ def update_language():
   URL = "/cgi-bin/tools/lmtool/run"
   TARGET = HOST+URL
 
-  #make sure curl or wget is installed
+  #make sure curl is installed
   try:
     output = subprocess.check_output("which curl", shell = True)
     downloader = "curl"
   except Exception as e: 
     print(e)
+    print("Please install `curl`")
+    #pffftttt  we're out of here!
+    sys.exit()
+  
+  #define the curl command to upload the corus file
+  cmd = "curl -s -L -F corpus=@{} -F formtype=simple {}".format(abs_sentences,TARGET) 
+  print(cmd)
+  #go for it, bruh!
+  try:
+    output = subprocess.check_output(cmd, shell = True)
+    #decode the output, should this be utf-8? 
+    output = output.decode('utf-8')
 
-  #if curl wasn't found
-  if not downloader:
-    try:
-      output = subprocess.check_output("which wget", shell = True)
-      downloader = "wget"
-    except Exception as e: 
-      print(e)
-      print("Please install `curl` or `wget`")
-      #pffftttt  we're out of here!
-      sys.exit()
-
-  if downloader == "curl":
-    cmd = "curl -s -L -F corpus=@{} -F formtype=simple {}".format(abs_sentences,TARGET) 
-    print(cmd)
-
-    try:
-      output = subprocess.check_output(cmd, shell = True)
-      #decode the output
-      output = output.decode('ascii')
-
-    except Exception as e: 
-      print(e)
-      print("failed to update language")
-      sys.exit()
+  except Exception as e: 
+    print(e)
+    print("failed to update language")
+    sys.exit()
       
-    print(output)
-    
-  else: 
-    #port the curl commands to wget
-    pass
+  print(output)
+
     
   #create a regex to find the base name
   namefinder = re.search(r"The base name for this set is <b>(?P<base_name>.*)<", output)
