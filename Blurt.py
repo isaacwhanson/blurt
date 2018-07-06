@@ -64,13 +64,13 @@ class Blurt:
     self.ui = UI(args, self.options['continuous'])
     self.ui.connect("command", self.process_command)
     #can we load the icon resource?
-    icon = self.load_resource("icon.png")
-    if icon:
-      self.ui.set_icon_active_asset(icon)
+    #icon = self.load_resource("icon.png")
+    #if icon:
+    #  self.ui.set_icon_active_asset(icon)
     #can we load the icon_inactive resource?
-    icon_inactive = self.load_resource("icon_inactive.png")
-    if icon_inactive:
-      self.ui.set_icon_inactive_asset(icon_inactive)
+    #icon_inactive = self.load_resource("icon_inactive.png")
+    #if icon_inactive:
+    #  self.ui.set_icon_inactive_asset(icon_inactive)
 
     if self.options['history']:
       self.history = []
