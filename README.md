@@ -1,6 +1,6 @@
 # Blather
 
-Blather is a speech recognizer that will run commands when a user speaks preset commands.
+Blather is a speech recognizer that will run commands when a user speaks preset phrases.
 
 ## Requirements
 
@@ -13,7 +13,7 @@ Blather is a speech recognizer that will run commands when a user speaks preset 
 
 ## Usage
 
-0. move commands.tmp to ~/.config/blather/commands.conf and fill the file with sentences and command to run
+0. move commands.conf.tmp to ~/.config/blather/commands.conf and fill the file with sentences and command to run
 1. Run `Blather.py -u` , this will:
 	* generate ~/.config/blather/sentences.corpus based on sentences in the 'commands' file
 	* upload the corpus file to Carnegie Melon University's Sphinx language tools 
