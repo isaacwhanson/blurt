@@ -1,6 +1,5 @@
 continuous: True
 history: None
 microphone: 0
-interface: q
 valid_sentence_command: null
 invalid_sentence_command: null

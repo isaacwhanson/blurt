@@ -1,6 +1,8 @@
-#This is part of Blather
+#This is part of blurt
 # -- this code is licensed GPLv3
+# Copyright 2018 Isaac W Hanson
 # Copyright 2013 Jezra
+
 
 
 import os.path

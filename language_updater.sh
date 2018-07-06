@@ -1,13 +1,13 @@
 #!/bin/bash
 
-blatherdir=~/.config/blather
-sentences=$blatherdir/sentences.corpus
-sourcefile=$blatherdir/commands.conf
-langdir=$blatherdir/language
-tempfile=$blatherdir/url.txt
+blurtdir=~/.config/blurt
+sentences=$blurtdir/sentences.corpus
+sourcefile=$blurtdir/commands.conf
+langdir=$blurtdir/language
+tempfile=$blurtdir/url.txt
 lmtoolurl=http://www.speech.cs.cmu.edu/cgi-bin/tools/lmtool/run
 
-cd $blatherdir
+cd $blurtdir
 
 sed -f - $sourcefile > $sentences <<EOFcommands
   /^$/d

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # -- this code is licensed GPLv3
+# Copyright 2018 Isaac W Hanson
 # Copyright 2013 Jezra
 
 import sys
@@ -16,11 +17,11 @@ from optparse import OptionParser
 import UpdateLanguage
 
 #where are the files?
-conf_dir = os.path.expanduser("~/.config/blather")
+conf_dir = os.path.expanduser("~/.config/blurt")
 lang_dir = os.path.join(conf_dir, "language")
 command_file = os.path.join(conf_dir, "commands.conf")
 strings_file = os.path.join(conf_dir, "sentences.corpus")
-history_file = os.path.join(conf_dir, "blather.history")
+history_file = os.path.join(conf_dir, "blurt.history")
 opt_file = os.path.join(conf_dir, "options.conf")
 lang_file = os.path.join(lang_dir,'lm')
 dic_file = os.path.join(lang_dir,'dic')
@@ -28,7 +29,7 @@ dic_file = os.path.join(lang_dir,'dic')
 if not os.path.exists(lang_dir):
   os.makedirs(lang_dir)
 
-class Blather:
+class Blurt:
   def __init__(self, opts):
     #import the recognizer so Gst doesn't clobber our -h
     from Recognizer import Recognizer
@@ -38,7 +39,7 @@ class Blather:
     ui_continuous_listen = False
     self.continuous_listen = False
     self.commands = {}
-    
+
     #read the commands
     self.load_commands_file()
     #load the options file
@@ -57,32 +58,23 @@ class Blather:
       #run the update stuff
       UpdateLanguage.update_language()
 
-    
-    if self.options['interface'] != None:
-      if self.options['interface'] == "q":
-        from QtUI import UI
-      elif self.options['interface'] == "g":
-        from GtkUI import UI
-      elif self.options['interface'] == "gt":
-        from GtkTrayUI import UI
-      else:
-        print("no GUI defined")
-        sys.exit()
 
-      self.ui = UI(args, self.options['continuous'])
-      self.ui.connect("command", self.process_command)
-      #can we load the icon resource?
-      icon = self.load_resource("icon.png")
-      if icon:
-        self.ui.set_icon_active_asset(icon)
-      #can we load the icon_inactive resource?
-      icon_inactive = self.load_resource("icon_inactive.png")
-      if icon_inactive:
-        self.ui.set_icon_inactive_asset(icon_inactive)
+    from GtkTrayUI import UI
+
+    self.ui = UI(args, self.options['continuous'])
+    self.ui.connect("command", self.process_command)
+    #can we load the icon resource?
+    icon = self.load_resource("icon.png")
+    if icon:
+      self.ui.set_icon_active_asset(icon)
+    #can we load the icon_inactive resource?
+    icon_inactive = self.load_resource("icon_inactive.png")
+    if icon_inactive:
+      self.ui.set_icon_inactive_asset(icon_inactive)
 
     if self.options['history']:
       self.history = []
-    
+
     #create the recognizer
     try:
       self.recognizer = Recognizer(lang_file, dic_file, self.options['microphone'] )
@@ -92,7 +84,7 @@ class Blather:
       sys.exit()
 
     self.recognizer.connect('finished',self.recognizer_finished)
-    
+
     print( "Using Options: ", self.options )
 
   def read_key_val_file(self, file_path, lowercase_key = False, lowercase_value = False):
@@ -110,9 +102,9 @@ class Blather:
           value = value.strip()
           print(key, value)
           if lowercase_key:
-            key = key.lower() 
+            key = key.lower()
           if lowercase_value:
-            value = value.lower() 
+            value = value.lower()
           if value == "None" or value=="null":
             value = None
           if value == "True" or value=="true":
@@ -120,19 +112,19 @@ class Blather:
           if value == "False" or value=="false":
             value = False
           return_struct[key] = value
-          
+
     return return_struct
-            
+
   def load_commands_file(self):
     #read the.commands file
     self.commands = self.read_key_val_file(command_file)
-   
+
   def generate_sentences_corpus(self):
     file_lines = open(command_file)
     strings = open(strings_file, "w")
     for i in self.commands:
       strings.write( i.lower()+"\n")
-      
+
     #close the strings file
     strings.close()
 
@@ -154,7 +146,7 @@ class Blather:
         #pop off the first item
         self.history.pop(0)
 
-      #open and truncate the blather history file
+      #open and truncate the blurt history file
       hfile = open(history_file, "w")
       for line in self.history:
         hfile.write( line+"\n")
@@ -202,7 +194,7 @@ class Blather:
     if self.ui:
       self.ui.run()
     else:
-      blather.recognizer.listen()
+      blurt.recognizer.listen()
 
   def quit(self):
     sys.exit()
@@ -224,7 +216,7 @@ class Blather:
 
   def load_resource(self,string):
     local_data = os.path.join(os.path.dirname(__file__), 'data')
-    paths = ["/usr/share/blather/","/usr/local/share/blather", local_data]
+    paths = ["/usr/share/blurt/","/usr/local/share/blurt", local_data]
     for path in paths:
       resource = os.path.join(path, string)
       if os.path.exists( resource ):
@@ -235,14 +227,10 @@ class Blather:
 
 if __name__ == "__main__":
   parser = OptionParser()
-  
+
   parser.add_option("-u", "--update", default=False,
     action="store_true", dest="update",
     help="update the language files (requires internet access)")
-  
-  parser.add_option("-i", "--interface",  type="string", dest="interface",
-    action='store',
-    help="Interface to use (if any). 'q' for Qt, 'g' for GTK, 'gt' for GTK system tray icon")
 
   parser.add_option("-c", "--continuous",
     action="store_true", dest="continuous", default=False,
@@ -273,17 +261,17 @@ if __name__ == "__main__":
     help="command to run when an invalid sentence is detected")
 
   (options, args) = parser.parse_args()
-  #make our blather object
-  blather = Blather(options)
+  #make our blurt object
+  blurt = Blurt(options)
   #init gobject threads
   GObject.threads_init()
   #we want a main loop
   main_loop = GObject.MainLoop()
   #handle sigint
   signal.signal(signal.SIGINT, signal.SIG_DFL)
-  #run the blather
-  print("run blather")
-  blather.run()
+  #run the blurt
+  print("run blurt")
+  blurt.run()
   #start the main loop
 
   try:

@@ -7,7 +7,7 @@ import re
 def update_language():
   #set some variables
   downloader = None
-  sentences_file = "~/.config/blather/sentences.corpus"
+  sentences_file = "~/.config/blurt/sentences.corpus"
   abs_sentences = os.path.expanduser(sentences_file)
   HOST = "www.speech.cs.cmu.edu"
   URL = "/cgi-bin/tools/lmtool/run"
@@ -55,7 +55,7 @@ def update_language():
   #do more downloading
   if downloader == 'curl':
     #get the lang file
-    cmd = "curl -s {} > ~/.config/blather/lm.tmp".format(lm_remote)
+    cmd = "curl -s {} > ~/.config/blurt/lm.tmp".format(lm_remote)
     try:
       output = subprocess.check_output(cmd, shell = True)
     except Exception as e: 
@@ -63,7 +63,7 @@ def update_language():
       print("Failed to download {}".format(lm_remote))
       sys.exit()
       
-    cmd = "curl -s {} > ~/.config/blather/dic.tmp".format(dic_remote)
+    cmd = "curl -s {} > ~/.config/blurt/dic.tmp".format(dic_remote)
     try:
       output = subprocess.check_output(cmd, shell = True)
     except Exception as e: 
@@ -72,8 +72,8 @@ def update_language():
       sys.exit()
 
     # if we made it this far, mv the temp files to their proper location
-    cmd = "mv ~/.config/blather/dic.tmp ~/.config/blather/language/dic"
+    cmd = "mv ~/.config/blurt/dic.tmp ~/.config/blurt/language/dic"
     subprocess.call(cmd, shell = True)
-    cmd = "mv ~/.config/blather/lm.tmp ~/.config/blather/language/lm"
+    cmd = "mv ~/.config/blurt/lm.tmp ~/.config/blurt/language/lm"
     subprocess.call(cmd, shell = True)
 

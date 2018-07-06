@@ -12,9 +12,9 @@ class UI(GObject.GObject):
     self.continuous = continuous
 
     self.statusicon = Gtk.StatusIcon()
-    self.statusicon.set_title("Blather")
-    self.statusicon.set_name("Blather")
-    self.statusicon.set_tooltip_text("Blather - Idle")
+    self.statusicon.set_title("Blurt")
+    self.statusicon.set_name("Blurt")
+    self.statusicon.set_tooltip_text("Blurt - Idle")
     self.statusicon.set_has_tooltip(True)
     self.statusicon.connect("activate", self.continuous_toggle)
     self.statusicon.connect("popup-menu", self.popup_menu)
@@ -41,11 +41,11 @@ class UI(GObject.GObject):
     if checked:
       self.menu_listen.set_label("Listen")
       self.emit('command', "continuous_listen")
-      self.statusicon.set_tooltip_text("Blather - Listening")
-      self.set_icon_active()
+      self.statusicon.set_tooltip_text("Blurt - Listening")
+      #self.set_icon_active()
     else:
-      self.set_icon_inactive()
-      self.statusicon.set_tooltip_text("Blather - Idle")
+      #self.set_icon_inactive()
+      self.statusicon.set_tooltip_text("Blurt - Idle")
       self.emit('command', "continuous_stop")
 
   def toggle_listen(self, item):
@@ -53,23 +53,23 @@ class UI(GObject.GObject):
     if val == "Listen":
       self.emit("command", "listen")
       self.menu_listen.set_label("Stop")
-      self.statusicon.set_tooltip_text("Blather - Listening")
-      self.set_icon_active()
+      self.statusicon.set_tooltip_text("Blurt - Listening")
+      #self.set_icon_active()
     else:
-      self.icon_inactive()
+      #self.icon_inactive()
       self.menu_listen.set_label("Listen")
       self.emit("command", "stop")
-      self.statusicon.set_tooltip_text("Blather - Idle")
+      self.statusicon.set_tooltip_text("Blurt - Idle")
 
   def popup_menu(self, item, button, time):
     self.menu.popup(None, None, None, None, button, time)
 
   def run(self):
     #set the icon
-    self.set_icon_inactive()
+    #self.set_icon_inactive()
     if self.continuous:
       self.menu_continuous.set_active(True)
-      self.set_icon_active()
+      #self.set_icon_active()
     else:
       self.menu_continuous.set_active(False)
     self.statusicon.set_visible(True)
@@ -81,18 +81,18 @@ class UI(GObject.GObject):
   def finished(self, text):
     if not self.menu_continuous.get_active():
       self.menu_listen.set_label("Listen")
-      self.set_icon_inactive()
-      self.statusicon.set_tooltip_text("Blather - Idle")
+      #self.set_icon_inactive()
+      self.statusicon.set_tooltip_text("Blurt - Idle")
 
-  def set_icon_active_asset(self, i):
-    self.icon_active = i
-
-  def set_icon_inactive_asset(self, i):
-    self.icon_inactive = i
-
-  def set_icon_active(self):
-    self.statusicon.set_from_file( self.icon_active )
-
-  def set_icon_inactive(self):
-    self.statusicon.set_from_file( self.icon_inactive )
+#  def set_icon_active_asset(self, i):
+#    self.icon_active = i
+#
+#  def set_icon_inactive_asset(self, i):
+#    self.icon_inactive = i
+#
+#  def set_icon_active(self):
+#    self.statusicon.set_from_file( self.icon_active )
+#
+#  def set_icon_inactive(self):
+#    self.statusicon.set_from_file( self.icon_inactive )
 
